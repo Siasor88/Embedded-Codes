@@ -126,5 +126,9 @@ def run(init_state: str):
         
 
 
+run('S1')
+        
+
+
     
     
