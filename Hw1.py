@@ -77,6 +77,16 @@ action_map= {
     'S3_3': 'Power = 30W'
 }
 
+default_states = {
+    'S1': 'S1_1',
+    'S2': 'S2_1',
+    'S3': 'S3_1'
+}
+out_states = {
+    'S1': 'S1_OUT',
+    'S2': 'S2_OUT',
+    'S3': 'S3_OUT'
+}
 def print_read_message(state):
     state_actions_dict = event_actions[state]
     print('Please select the next possible event...')
@@ -117,8 +127,8 @@ def run(init_state: str):
     while(True):
         e = call_super_state(state= PS, 
                              state_mapper= state_mappers[PS], 
-                             default_state= state_mappers[PS].keys()[0], 
-                             out_state= state_mappers[PS].keys()[-1]
+                             default_state= default_states[PS], 
+                             out_state= out_states[PS]
                             )
         PS = next_state[PS][e]
         if PS not in States:
