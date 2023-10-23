@@ -1,6 +1,9 @@
-States = ['S1', 'S2', 'S3']
+import io
+from io import StringIO
+# f =  StringIO("1\n0\n0\n1\n1\n0\n1\n")
+# States = ['S1', 'S2', 'S3']
 event_actions = {
-    'S1_1': {0: 'T<15', 1: '30<T'},
+    'S1_1': {0: 'T<15', 1: '35<T'},
     'S2_1': {0: 'T<25', 1: '40<T'},
     'S2_2': {0: 'T<35', 1: '45<T'},
     'S2_3': {0: 'T<40'},
@@ -24,24 +27,24 @@ next_state = {
 state_mappers = {
     'S2': {
         'S2_1': {
-            '40<T': 'S1_2',
-            'T<25': 'S1_OUT'            
+            '40<T': 'S2_2',
+            'T<25': 'S2_OUT'            
         },
         'S2_2': {
-            '45<T': 'S1_3',
-            'T<35': 'S1_1'
+            '45<T': 'S2_3',
+            'T<35': 'S2_1'
         },
         'S2_3': {
-            'T<40':'S1_2'
+            'T<40':'S2_2'
         },
         'S2_OUT': {
-            '35<T': 'S1_1'
+            '35<T': 'S2_1'
         }
     }, 
     'S1': {
         'S1_1': {
-            'T<15': 'S2_OUT',
-            '35<T': 'S2_OUT'
+            'T<15': 'S1_OUT',
+            '35<T': 'S1_OUT'
         },
         'S1_OUT': {
         }
@@ -69,6 +72,7 @@ action_map= {
     'S1': 'Heater: OFF, Cooler: OFF',
     'S2': 'Heater: OFF, Cooler: ON',
     'S3': 'Heater: ON, Cooler: OFF',
+    'S1_1': None,
     'S2_1': 'CRS = 4RPS',
     'S2_2': 'CRS = 6RPS',
     'S2_3': 'CRS = 8RPS',
@@ -97,7 +101,8 @@ def print_read_message(state):
 
 def read_event(state):
     print_read_message(state)
-    txt = input()
+    # txt = f.readline().strip()
+    txt =input().strip()
     if not txt.isalnum(): raise Exception('System Failure.')
     option = int(txt)
     if option not in event_actions[state].keys():
@@ -107,6 +112,7 @@ def read_event(state):
     
 
 def action(state: str):
+    if state is None: return
     action = action_map[state]
     print(f'At State {state}, action: {action} has been performed.')
 
@@ -116,6 +122,7 @@ def call_super_state(state, state_mapper, default_state, out_state):
     PS = default_state
     e = None
     while(PS != out_state):
+        action(PS)
         e = read_event(PS)
         PS = state_mapper[PS][e]
     return e
